@@ -27,7 +27,7 @@ try {
 }
 
 //---------------------------------------------------
-// Récupération de toutes les sélections d'un projet
+// Récupération de toutes les sélection d'un projet
 // sans les objets touristiques
 //---------------------------------------------------
 /*
@@ -41,7 +41,7 @@ try {
 */
 //----------------------------------------------
 // Récupération des sélections
-// avec uniquent les id d'objets touristiques
+// avec uniquent les ids d'objets touristiques
 //----------------------------------------------
 
 /*
@@ -54,8 +54,8 @@ try {
 }*/
 
 //-------------------------------------------------
-// Récupération des id d'objets d'une sélections
-// avec uniquent les id d'objets touristiques
+// Récupération des id d'objets d'une sélection
+// avec uniquent les ids d'objets touristiques
 //-------------------------------------------------
 /*
 try {
@@ -67,7 +67,7 @@ try {
 }*/
 
 //----------------------------------------------
-// Récupération des objets modifié depuis 72h 
+// Récupération des objets modifiés depuis 72h 
 // uniquement avec les champs id, libelle
 //----------------------------------------------
 
