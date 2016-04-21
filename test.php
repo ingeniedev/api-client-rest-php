@@ -27,7 +27,7 @@ try {
 }
 
 //---------------------------------------------------
-// Récupération de toutes les sélection d'un projet
+// Récupération de toutes les sélections d'un projet
 // sans les objets touristiques
 //---------------------------------------------------
 /*
