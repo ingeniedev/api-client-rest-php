@@ -16,4 +16,3 @@ try {
     echo 'Erreur Login : '.$ex->getCode().' / Message :  '.$ex->getMessage()."\n";
     exit;
 }
-
