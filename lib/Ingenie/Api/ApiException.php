@@ -9,3 +9,4 @@ namespace Ingenie\Api;
  */
 class ApiException extends \Exception {
 }
+
