@@ -14,7 +14,7 @@
 //---------------------------------------------------
  
 try {
-    $reponse = $objApiClient->get('/v2/objets_touristiques?id_projet='.API_PROJET_ID);
+    $reponse = $objApiClient->get('v2/objets_touristiques?id_projet='.API_PROJET_ID);
     // On si le résultat est partiel ou pas (pagination)
     if($reponse->isPartialContent()) {
        // On doit faire une boucle tant qu'il y a du contenu à lire
@@ -42,7 +42,7 @@ try {
 //------------------------------------------------------------------
 /*
 try {
-    $reponse = $objApiClient->get('/v2/objets_touristiques?id_projet='.API_PROJET_ID.'&update_from=24h');
+    $reponse = $objApiClient->get('v2/objets_touristiques?id_projet='.API_PROJET_ID.'&update_from=24h');
     if($reponse->isPartialContent()) {
        // On doit faire une boucle tant qu'il y a du contenu à lire
        while(($url = $reponse->getNextLink()) !== null) {
@@ -71,7 +71,7 @@ try {
 try {
     //  Id objet à modifier suivant le contexte
     $idObjet = 'A|FRANCERAFT';
-    $reponse = $objApiClient->get('/v2/objets_touristiques/'.$idObjet);
+    $reponse = $objApiClient->get('v2/objets_touristiques/'.$idObjet);
     print_r($reponse->getData());
 } catch (\Ingenie\Api\ApiException $ex) {
     echo 'Code : '.$ex->getCode().' / Message :  '.$ex->getMessage()."\n";

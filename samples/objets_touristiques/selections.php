@@ -13,7 +13,7 @@ require_once '../../connection.inc.php';
 //---------------------------------------------------
 /*
 try {
-    $reponse = $objApiClient->get('/v2/objets_touristiques/selections?id_projet='.API_PROJET_ID.'&fields=-objets_touristiques');
+    $reponse = $objApiClient->get('v2/objets_touristiques/selections?id_projet='.API_PROJET_ID.'&fields=-objets_touristiques');
     print_r($reponse->getData());
 } catch (\Ingenie\Api\ApiException $ex) {
     echo 'Code : '.$ex->getCode().' / Message :  '.$ex->getMessage()."\n";
@@ -27,7 +27,7 @@ try {
 //----------------------------------------------
 /*
 try {
-    $reponse = $objApiClient->get('/v2/objets_touristiques/selections?id_projet='.API_PROJET_ID.'&ids=15P,18P&fields=objets_touristiques');
+    $reponse = $objApiClient->get('v2/objets_touristiques/selections?id_projet='.API_PROJET_ID.'&ids=15P,18P&fields=objets_touristiques');
     print_r($reponse->getData());
 } catch (\Ingenie\Api\ApiException $ex) {
     echo 'Code : '.$ex->getCode().' / Message :  '.$ex->getMessage()."\n";
@@ -40,7 +40,7 @@ try {
 //-------------------------------------------------
 
 try {
-    $reponse = $objApiClient->get('/v2/objets_touristiques/selections/15P?fields=objets_touristiques');
+    $reponse = $objApiClient->get('v2/objets_touristiques/selections/15P?fields=objets_touristiques');
     print_r($reponse->getData());
 } catch (\Ingenie\Api\ApiException $ex) {
     echo 'Code : '.$ex->getCode().' / Message :  '.$ex->getMessage()."\n";

@@ -32,7 +32,15 @@ class ApiManager {
         $this->urlApi = $urlApi;
         $this->headers = array(self::HEADER_JSON);
     }
-
+    
+    /**
+     * Changement de l'url de l'API
+     * @param string $url
+     */
+    public function setUrlApi($url) {
+         $this->urlApi = $url;
+    }
+    
     /**
      * Ajoute une valeur en header
      * @param string[] $header
