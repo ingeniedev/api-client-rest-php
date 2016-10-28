@@ -1,4 +1,4 @@
-# API Ingénie
+# API Ingénie : Client Rest PHP
 
 Client Rest d'exemple pour utiliser l'API Ingénie.
 
