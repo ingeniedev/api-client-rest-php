@@ -1,5 +1,9 @@
 # api-client-rest-php
 
-Client Rest d'exemple pour utiliser l'API Ingénie (compatible php 5.3 minimun)
+Client Rest d'exemple pour utiliser l'API Ingénie.
 
-Renseigner vos codes d'accés dans le fichier test.php pour tester l'API
+Cette librairie est compatible avec php 5.3 (minimun). Elle utilise la librairie CURL.
+
+Renseigner vos codes d'accés dans le fichier config.inc.php pour tester l'API
+
+Voir le repertoire samples pour trouver des exemples d'utilisation.

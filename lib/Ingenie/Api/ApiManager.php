@@ -1,13 +1,13 @@
 <?php
 
-namespace Ingenie\ApiClientRest;
+namespace Ingenie\Api;
 
 /**
  * Classe de connection à l'API Ingénie
  *
  * @author Ingenie
  */
-class IngenieClientRest {
+class ApiManager {
 
     private $token = null;
     private $urlApi = self::URL_API;
@@ -20,8 +20,10 @@ class IngenieClientRest {
     const PUT = 'PUT';
     const DELETE = 'DELETE';
     const HEADER_JSON = 'Content-Type: application/json';
+    
     const HTTP_OK = 200;
-
+    const HTTP_OK_PARTIAL = 206;
+    
     /**
      * Init de l'objet
      * @param type $urlApi Url de l'API
@@ -63,16 +65,14 @@ class IngenieClientRest {
         $reponse = $this->doRequest(self::POST, $this->urlApi . '/login', json_encode(
                         array('username' => $username, 'password' => $password, 'organisme' => $organisme)
         ));
-
-        if ($reponse !== null && $reponse->status == self::HTTP_OK) {
-            $data = json_decode($reponse->data, true);
+        if ($reponse !== null && $reponse->getStatus() == self::HTTP_OK) {
+            $data = $reponse->getData(true);
             if (isset($data['token'])) {
                 $this->setToken($data['token']);
             }
         } else {
             $msg = 'Impossible de se connecter à l\'API';
-            if (isset($reponse->data) && $reponse->data !== null) {
-                $data = json_decode($reponse->data, true);
+            if (($data = $reponse->getData(true)) !== null) {
                 if (isset($data['error'])) {
                     $msg = '<br />' . $data['error'] . ' : ';
                 }
@@ -80,28 +80,8 @@ class IngenieClientRest {
                     $msg .= $data['error_description'];
                 }
             }
-            throw new \Exception($msg);
+            throw new \Ingenie\Api\ApiException($msg);
         }
-    }
-    
-    /**
-     * Analyse la réponse et retourne le contenu JSON
-     * @param mix $reponse
-     * @param boolean $modeArray Indique si on est en mode array ou non
-     * @return mix json array
-     */
-    public function checkReponse($reponse,$modeArray = true) {
-      if ($reponse->status == self::HTTP_OK) {
-           return json_decode($reponse->data, $modeArray);
-      } else {
-          if($reponse->data !== null) {
-              $data = json_decode($reponse->data);
-              $code = (double) $reponse->status;
-             throw new \Exception($data->error.' => '.$data->error_description,$code);
-          } else {
-             throw new \Exception('Erreur '.$reponse->status);
-          }
-      }  
     }
     
     /**
@@ -115,7 +95,7 @@ class IngenieClientRest {
         if ($this->isConnected) {
             return $this->doRequest(self::GET, $this->urlApi . '/' . $resource, $params);
         } else {
-            throw new \Exception('Vous devez vous connecter à l\'API et demander un token');
+            throw new \Ingenie\Api\ApiException('Vous devez vous connecter à l\'API et demander un token');
         }
     }
     
@@ -130,7 +110,7 @@ class IngenieClientRest {
         if ($this->isConnected) {
             return $this->doRequest(self::POST, $this->urlApi . '/' . $resource, $params);
         } else {
-            throw new \Exception('Vous devez vous connecter à l\'API et demander un token');
+            throw new \Ingenie\Api\ApiException('Vous devez vous connecter à l\'API et demander un token');
         }
     }
     
@@ -145,7 +125,7 @@ class IngenieClientRest {
         if ($this->isConnected) {
             return $this->doRequest(self::PUT, $this->urlApi . '/' . $resource, $params);
         } else {
-            throw new \Exception('Vous devez vous connecter à l\'API et demander un token');
+            throw new \Ingenie\Api\ApiException('Vous devez vous connecter à l\'API et demander un token');
         }
     }
     
@@ -160,7 +140,7 @@ class IngenieClientRest {
         if ($this->isConnected) {
             return $this->doRequest(self::DELETE, $this->urlApi . '/' . $resource, $params);
         } else {
-            throw new \Exception('Vous devez vous connecter à l\'API et demander un token');
+            throw new \Ingenie\Api\ApiException('Vous devez vous connecter à l\'API et demander un token');
         }
     }
 
@@ -173,7 +153,6 @@ class IngenieClientRest {
      * @return $reponse object
      */
     protected function doRequest($type, $url, $params = array()) {
-        $headers = $this->headers;
         $s = curl_init();
         curl_setopt($s, CURLOPT_CUSTOMREQUEST, $type);
         switch ($type) {
@@ -202,25 +181,47 @@ class IngenieClientRest {
                 curl_setopt($s, CURLOPT_URL, $query);
                 break;
             default :
-                throw new \Exception("Type non valide");
+                throw new \Ingenie\Api\ApiException("Type non valide");
         }
-
-        curl_setopt($s, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($s, CURLOPT_HTTPHEADER, $headers);
-        $data = curl_exec($s);
-        $status = curl_getinfo($s, CURLINFO_HTTP_CODE);
-        curl_close($s);
+        curl_setopt($s, CURLOPT_HTTPHEADER, $this->headers);
+        curl_setopt($s, CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($s,CURLOPT_HEADER,true);
         
-        // Récupétation de la reponse
-        $reponse = new \stdClass();
-        $reponse->status = $status;
-        if (($json = json_decode($data)) !== null) {
-            $reponse->data = $data;
-        } else {
-            $reponse->data = null;
+        $reponseCurl = curl_exec($s);
+        
+        // Récupération du status de la requêtes
+        $status = curl_getinfo($s, CURLINFO_HTTP_CODE);
+        // Taille du header
+        $headerSize = curl_getinfo($s, CURLINFO_HEADER_SIZE);
+        // Extraction du header
+        $headers = $this->_parseHeader(substr($reponseCurl, 0, $headerSize));
+        
+        // Extraction des données
+        $data = substr($reponseCurl, $headerSize);
+        if(json_decode($data) === null) {
+           $data = null; 
         }
-
-        return $reponse;
+        curl_close($s);
+        return new ApiResponse($status,$data,$headers);
     }
     
+    /**
+     * Pour passer les headers
+     * @param type $strHeader
+     * @return array Tableau de headers sous forme de clé / valeur
+     */
+    private function _parseHeader($strHeader) {
+        $headers = array();
+        $tabTmpHead = substr($strHeader, stripos($strHeader, "\r\n"));
+        $tabTmpHead = explode("\r\n", $tabTmpHead);
+        foreach ($tabTmpHead as $h) {
+            if($h !== '') {
+                list($v, $val) = explode(": ", $h);
+                if ($v == null) continue;
+                $headers[$v] = $val;
+            }
+        }
+        return $headers;
+    }
+   
 }
