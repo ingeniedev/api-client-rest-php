@@ -57,7 +57,7 @@ class ApiManager {
         $this->token = $token;
         $this->isConnected = true;
         $this->headers = array(self::HEADER_JSON);
-        $this->addHeader('Authorization : Bearer ' . $this->token);
+        $this->addHeader('Authorization: Bearer ' . $this->token);
     }
 
     /**
