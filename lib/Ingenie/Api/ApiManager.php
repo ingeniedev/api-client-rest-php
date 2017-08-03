@@ -26,7 +26,7 @@ class ApiManager {
     
     /**
      * Init de l'objet
-     * @param type $urlApi Url de l'API
+     * @param string $urlApi Url de l'API
      */
     public function __construct($urlApi = self::URL_API) {
         $this->urlApi = $urlApi;
@@ -43,7 +43,7 @@ class ApiManager {
     
     /**
      * Ajoute une valeur en header
-     * @param string[] $header
+     * @param string $header
      */
     public function addHeader($header) {
         $this->headers[] = $header;
@@ -97,7 +97,7 @@ class ApiManager {
      * @param string $resource 
      * @param array $params
      * @return object
-     * @throws Exception
+     * @throws \Ingenie\Api\ApiException
      */
     public function get($resource, $params = array()) {
         if ($this->isConnected) {
@@ -112,7 +112,7 @@ class ApiManager {
      * @param string $resource 
      * @param array $params
      * @return object
-     * @throws Exception
+     * @throws \Ingenie\Api\ApiException
      */
     public function post($resource, $params = array()) {
         if ($this->isConnected) {
@@ -127,7 +127,7 @@ class ApiManager {
      * @param string $resource 
      * @param array $params
      * @return object
-     * @throws Exception
+     * @throws \Ingenie\Api\ApiException
      */
     public function put($resource, $params = array()) {
         if ($this->isConnected) {
@@ -142,7 +142,7 @@ class ApiManager {
      * @param string $resource 
      * @param array $params
      * @return object
-     * @throws Exception
+     * @throws \Ingenie\Api\ApiException
      */
     public function delete($resource, $params = array()) {
         if ($this->isConnected) {
@@ -196,7 +196,9 @@ class ApiManager {
         curl_setopt($s,CURLOPT_HEADER,true);
         
         $reponseCurl = curl_exec($s);
-        
+        if(curl_errno($s)) {
+            throw new ApiException('Curl: ' . curl_error($s));
+        }
         // Récupération du status de la requêtes
         $status = curl_getinfo($s, CURLINFO_HTTP_CODE);
         // Taille du header
@@ -215,7 +217,7 @@ class ApiManager {
     
     /**
      * Pour passer les headers
-     * @param type $strHeader
+     * @param string $strHeader
      * @return array Tableau de headers sous forme de clé / valeur
      */
     private function _parseHeader($strHeader) {
