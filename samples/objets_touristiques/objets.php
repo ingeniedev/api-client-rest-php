@@ -12,25 +12,32 @@
 // Utilisé par exemple lors d'un import initial
 // A éviter par la suite !
 //---------------------------------------------------
- 
+
+$nbObjets = 0;
 try {
     $reponse = $objApiClient->get('v2/objets_touristiques?id_projet='.API_PROJET_ID);
-    // On si le résultat est partiel ou pas (pagination)
+
+    // Récupération des données
+    $data = $reponse->getData();
+    // @todo traitement sur le tableau $data
+
+    $nbObjets += count($data);
+
+    // Test si le résultat est partiel (pagination)
     if($reponse->isPartialContent()) {
        // On doit faire une boucle tant qu'il y a du contenu à lire
        while(($url = $reponse->getNextLink()) !== null) {
            $reponse = $objApiClient->get($url);
+
            // Récupération des données
            $data = $reponse->getData();
-           echo 'Nb objet(s) ('.$url.'): '.count($data)."\n";
-           //print_r($data);
+           // @todo traitement sur le tableau $data
+
+           $nbObjets += count($data);
        }
-    } else {
-       // Récupération des données
-       $data = $reponse->getData();
-       //print_r($data);
-       echo 'Nb objet(s) : '.count($data)."\n";
     }
+
+    echo 'Nb objet(s) : '.$nbObjets."\n";
     
 } catch (\Ingenie\Api\ApiException $ex) {
     echo 'Code : '.$ex->getCode().' / Message :  '.$ex->getMessage()."\n";
@@ -43,6 +50,9 @@ try {
 /*
 try {
     $reponse = $objApiClient->get('v2/objets_touristiques?id_projet='.API_PROJET_ID.'&update_from=24h');
+    // Récupération des données
+    $data = $reponse->getData();
+    echo 'Nb objet(s) : '.count($data)."\n";
     if($reponse->isPartialContent()) {
        // On doit faire une boucle tant qu'il y a du contenu à lire
        while(($url = $reponse->getNextLink()) !== null) {
@@ -52,11 +62,6 @@ try {
            echo 'Nb objet(s) ('.$url.'): '.count($data)."\n";
            //print_r($data);
        }
-    } else {
-       // Récupération des données
-       $data = $reponse->getData();
-       //print_r($data);
-       echo 'Nb objet(s) : '.count($data)."\n";
     }
 } catch (\Ingenie\Api\ApiException $ex) {
     echo 'Code : '.$ex->getCode().' / Message :  '.$ex->getMessage()."\n";
