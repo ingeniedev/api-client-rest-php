@@ -27,7 +27,8 @@ class ApiLinkPage {
     private $prev = null;
 
     /**
-     * Vérifie les liens de pagination dans les headers
+     * ApiLinkPage constructor.
+     * @param array $headers
      */
     public function __construct($headers) {
         
@@ -77,21 +78,21 @@ class ApiLinkPage {
     }
 
     /**
-     * @return first
+     * @return null|string
      */
     public function getFirst() {
         return $this->first;
     }
 
     /**
-     * @return last
+     * @return null|string
      */
     public function getLast() {
         return $this->last;
     }
 
     /**
-     * @return next
+     * @return null|string
      */
     public function getNext() {
         return $this->next;
@@ -99,11 +100,10 @@ class ApiLinkPage {
 
     /**
      * Retourne le prochaine numéro de page
-     *
-     * @return Le numéro de page
+     * @return null|string
      */
     public function getNextPage() {
-        if ($this->next == null) {
+        if ($this->next === null) {
             return null;
         } else {
             $pageSplit = explode("&page=",$this->next);
@@ -115,7 +115,7 @@ class ApiLinkPage {
     }
 
     /**
-     * @return prev
+     * @return null|string
      */
     public function getPrev() {
         return $this->prev;

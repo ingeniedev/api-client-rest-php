@@ -65,6 +65,7 @@ class ApiManager {
      * @param string $username Nom d'utilisateur 
      * @param string $password Mot de passe
      * @param string $organisme Id de l'organisme
+     * @throws ApiException
      */
     public function connect($username, $password, $organisme) {
 
@@ -88,7 +89,7 @@ class ApiManager {
                     $msg .= $data['error_description'];
                 }
             }
-            throw new \Ingenie\Api\ApiException($msg);
+            throw new ApiException($msg);
         }
     }
     
@@ -97,13 +98,13 @@ class ApiManager {
      * @param string $resource 
      * @param array $params
      * @return object
-     * @throws \Ingenie\Api\ApiException
+     * @throws ApiException
      */
     public function get($resource, $params = array()) {
         if ($this->isConnected) {
             return $this->doRequest(self::GET, $this->urlApi . '/' . $resource, $params);
         } else {
-            throw new \Ingenie\Api\ApiException('Vous devez vous connecter à l\'API et demander un token');
+            throw new ApiException('Vous devez vous connecter à l\'API et demander un token');
         }
     }
     
@@ -112,13 +113,13 @@ class ApiManager {
      * @param string $resource 
      * @param array $params
      * @return object
-     * @throws \Ingenie\Api\ApiException
+     * @throws ApiException
      */
     public function post($resource, $params = array()) {
         if ($this->isConnected) {
             return $this->doRequest(self::POST, $this->urlApi . '/' . $resource, $params);
         } else {
-            throw new \Ingenie\Api\ApiException('Vous devez vous connecter à l\'API et demander un token');
+            throw new ApiException('Vous devez vous connecter à l\'API et demander un token');
         }
     }
     
@@ -127,13 +128,13 @@ class ApiManager {
      * @param string $resource 
      * @param array $params
      * @return object
-     * @throws \Ingenie\Api\ApiException
+     * @throws ApiException
      */
     public function put($resource, $params = array()) {
         if ($this->isConnected) {
             return $this->doRequest(self::PUT, $this->urlApi . '/' . $resource, $params);
         } else {
-            throw new \Ingenie\Api\ApiException('Vous devez vous connecter à l\'API et demander un token');
+            throw new ApiException('Vous devez vous connecter à l\'API et demander un token');
         }
     }
     
@@ -142,23 +143,23 @@ class ApiManager {
      * @param string $resource 
      * @param array $params
      * @return object
-     * @throws \Ingenie\Api\ApiException
+     * @throws ApiException
      */
     public function delete($resource, $params = array()) {
         if ($this->isConnected) {
             return $this->doRequest(self::DELETE, $this->urlApi . '/' . $resource, $params);
         } else {
-            throw new \Ingenie\Api\ApiException('Vous devez vous connecter à l\'API et demander un token');
+            throw new ApiException('Vous devez vous connecter à l\'API et demander un token');
         }
     }
 
     /**
      * Faire une requête
-     *
      * @param string $type POST|GET|PUT|DELETE
      * @param string $url Url de requête
      * @param array $params paramétre
-     * @return $reponse object
+     * @return ApiResponse
+     * @throws ApiException
      */
     protected function doRequest($type, $url, $params = array()) {
         $s = curl_init();
@@ -189,7 +190,7 @@ class ApiManager {
                 curl_setopt($s, CURLOPT_URL, $query);
                 break;
             default :
-                throw new \Ingenie\Api\ApiException("Type non valide");
+                throw new ApiException("Type non valide");
         }
         curl_setopt($s, CURLOPT_HTTPHEADER, $this->headers);
         curl_setopt($s, CURLOPT_RETURNTRANSFER,true);
@@ -235,4 +236,3 @@ class ApiManager {
     }
    
 }
-
